@@ -65,20 +65,21 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 // Lost Items Routes
 app.post('/lost-items', async (req, res) => {
     try {
-        const { item_name, person_name, lost_date, location, contact_number, email } = req.body;
-        const query = `
-            INSERT INTO lost_items (item_name, person_name, lost_date, location, contact_number, email)
-            VALUES ($1, $2, $3, $4, $5, $6)
-            RETURNING *
-        `;
-        const values = [item_name, person_name, lost_date, location, contact_number, email];
-        const result = await pool.query(query, values);
-        res.json(result.rows[0]);
+      const { item_name, person_name, lost_date, location, contact_number, email, description } = req.body;
+      const query = `
+        INSERT INTO lost_items (item_name, person_name, lost_date, location, contact_number, email, description)
+        VALUES ($1, $2, $3, $4, $5, $6, $7)
+        RETURNING *
+      `;
+      const values = [item_name, person_name, lost_date, location, contact_number, email, description];
+      const result = await pool.query(query, values);
+      res.json(result.rows[0]);
     } catch (err) {
-        console.error('Error creating lost item:', err.message);
-        res.status(500).json({ error: err.message });
+      console.error('Error creating lost item:', err.message);
+      res.status(500).json({ error: err.message });
     }
-});
+  });
+  
 
 app.get('/lost-items', async (req, res) => {
     try {
@@ -138,6 +139,22 @@ app.put('/lost-items/:id/mark-found', async (req, res) => {
     }
 });
 
+app.put('/found-items/:id/mark-claimed', async (req, res) => {
+    try {
+      const { id } = req.params;
+      const result = await pool.query(
+        'UPDATE found_items SET is_claimed = true WHERE id = $1 RETURNING *',
+        [id]
+      );
+      if (result.rows.length === 0) {
+        return res.status(404).json({ error: 'Item not found' });
+      }
+      res.json(result.rows[0]);
+    } catch (err) {
+      console.error('Error marking item as claimed:', err.message);
+      res.status(500).json({ error: err.message });
+    }
+  });
 
 // Report Generation Route
 app.post('/generate-report', async (req, res) => {
@@ -198,8 +215,6 @@ app.post('/generate-report', async (req, res) => {
         res.status(500).json({ error: err.message });
     }
 });
-
-// ...existing code...
 
 // Error handling middleware
 app.use((err, req, res, next) => {

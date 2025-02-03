@@ -73,3 +73,13 @@ export const generateReport = async (fromDate, toDate) => {
   a.click();
   window.URL.revokeObjectURL(url);
 };
+
+export const markFoundItemAsClaimed = async (itemId) => {
+  const response = await fetch(`${API_URL}/found-items/${itemId}/mark-claimed`, {
+    method: 'PUT'
+  });
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
+  }
+  return response.json();
+};

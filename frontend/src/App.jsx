@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { submitLostItem, submitFoundItem, fetchLostItems, fetchFoundItems, markItemAsFound, generateReport } from './services/api';
+import { submitLostItem, submitFoundItem, fetchLostItems, fetchFoundItems, markItemAsFound, generateReport, markFoundItemAsClaimed } from './services/api';
 import './App.css';
 
 function App() {
@@ -17,7 +17,8 @@ function App() {
     lost_date: '',
     location: '',
     contact_number: '',
-    email: ''
+    email: '',
+    description: ''
   });
 
   const [foundForm, setFoundForm] = useState({
@@ -77,7 +78,8 @@ function App() {
         lost_date: '',
         location: '',
         contact_number: '',
-        email: ''
+        email: '',
+        description: ''
       });
       alert('Lost item reported successfully!');
     } catch (err) {
@@ -130,6 +132,18 @@ function App() {
     }
   };
 
+  const handleMarkAsClaimed = async (itemId) => {
+    try {
+      setLoading(true);
+      await markFoundItemAsClaimed(itemId);
+      setFoundItems(foundItems.filter(item => item.id !== itemId));
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleReportGeneration = async (e) => {
     e.preventDefault();
     try {
@@ -150,9 +164,10 @@ function App() {
     item.location.toLowerCase().includes(lostItemsSearch.toLowerCase())
   );
 
-  const filteredFoundItems = foundItems.filter(item =>
-    item.item_name.toLowerCase().includes(foundItemsSearch.toLowerCase()) ||
-    item.location.toLowerCase().includes(foundItemsSearch.toLowerCase())
+  const filteredFoundItems = foundItems.filter(item => 
+    !item.is_claimed && 
+    (item.item_name.toLowerCase().includes(foundItemsSearch.toLowerCase()) ||
+    item.location.toLowerCase().includes(foundItemsSearch.toLowerCase()))
   );
 
   return (
@@ -210,7 +225,7 @@ function App() {
       )}
 
       <div className="mt-4">
-        {activeTab === 'lostForm' && (
+      {activeTab === 'lostForm' && (
           <form onSubmit={handleLostSubmit} className="space-y-4 max-w-lg mx-auto px-4 sm:px-0">
             <input
               type="text"
@@ -220,6 +235,16 @@ function App() {
               className="w-full p-2 border rounded text-sm sm:text-base"
               required
             />
+            
+            <textarea
+              placeholder="Item Description"
+              value={lostForm.description}
+              onChange={(e) => setLostForm({...lostForm, description: e.target.value})}
+              className="w-full p-2 border rounded text-sm sm:text-base"
+              rows="3"
+              required
+            />
+
             <input
               type="text"
               placeholder="Your Name"
@@ -235,6 +260,7 @@ function App() {
               className="w-full p-2 border rounded text-sm sm:text-base"
               required
             />
+
             <input
               type="text"
               placeholder="Location"
@@ -243,6 +269,7 @@ function App() {
               className="w-full p-2 border rounded text-sm sm:text-base"
               required
             />
+
             <input
               type="tel"
               placeholder="Contact Number"
@@ -259,6 +286,7 @@ function App() {
               className="w-full p-2 border rounded text-sm sm:text-base"
               required
             />
+
             <button
               type="submit"
               disabled={loading}
@@ -338,6 +366,7 @@ function App() {
                 filteredLostItems.map(item => (
                   <div key={item.id} className="border p-4 sm:p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow">
                     <h3 className="font-bold text-lg sm:text-xl mb-2">{item.item_name}</h3>
+                    <p className="text-sm sm:text-base mb-1">Item description: {item.description}</p>
                     <p className="text-sm sm:text-base mb-1">Lost by: {item.person_name}</p>
                     <p className="text-sm sm:text-base mb-1">Date: {new Date(item.lost_date).toLocaleDateString()}</p>
                     <p className="text-sm sm:text-base mb-1">Location: {item.location}</p>
@@ -386,7 +415,13 @@ function App() {
                         className="w-full h-40 sm:h-48 object-cover rounded-lg"
                       />
                     )}
-                  </div>
+                    <button
+                      onClick={() => handleMarkAsClaimed(item.id)}
+                      className="w-full bg-green-500 text-white p-2 rounded text-sm sm:text-base hover:bg-green-600 transition-colors"
+                    >
+                      Mark as Claimed
+                    </button>
+                  </div>  
                 ))
               )}
             </div>
