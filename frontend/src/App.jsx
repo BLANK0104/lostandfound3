@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { submitLostItem, submitFoundItem, fetchLostItems, fetchFoundItems, markItemAsFound } from './services/api';
+import { submitLostItem, submitFoundItem, fetchLostItems, fetchFoundItems, markItemAsFound, generateReport } from './services/api';
 import './App.css';
 
 function App() {
@@ -26,6 +26,11 @@ function App() {
     found_date: '',
     location: '',
     image: null
+  });
+
+  const [reportForm, setReportForm] = useState({
+    fromDate: '',
+    toDate: ''
   });
 
   useEffect(() => {
@@ -125,6 +130,21 @@ function App() {
     }
   };
 
+  const handleReportGeneration = async (e) => {
+    e.preventDefault();
+    try {
+      setLoading(true);
+      await generateReport(
+        new Date(reportForm.fromDate).toISOString(),
+        new Date(reportForm.toDate).toISOString()
+      );
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const filteredLostItems = lostItems.filter(item =>
     item.item_name.toLowerCase().includes(lostItemsSearch.toLowerCase()) ||
     item.location.toLowerCase().includes(lostItemsSearch.toLowerCase())
@@ -171,6 +191,14 @@ function App() {
           }`}
         >
           Found Items
+        </button>
+        <button
+          onClick={() => setActiveTab('report')}
+          className={`px-4 py-2 rounded-lg text-sm sm:text-base ${
+            activeTab === 'report' ? 'bg-blue-500 text-white' : 'bg-gray-200'
+          }`}
+        >
+          Generate Report
         </button>
       </div>
 
@@ -363,6 +391,38 @@ function App() {
               )}
             </div>
           </div>
+        )}
+
+        {activeTab === 'report' && (
+          <form onSubmit={handleReportGeneration} className="space-y-4 max-w-lg mx-auto px-4 sm:px-0">
+            <div>
+              <label className="block text-sm font-medium text-gray-700">From Date</label>
+              <input
+                type="date"
+                value={reportForm.fromDate}
+                onChange={(e) => setReportForm({...reportForm, fromDate: e.target.value})}
+                className="w-full p-2 border rounded text-sm sm:text-base mt-1"
+                required
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700">To Date</label>
+              <input
+                type="date"
+                value={reportForm.toDate}
+                onChange={(e) => setReportForm({...reportForm, toDate: e.target.value})}
+                className="w-full p-2 border rounded text-sm sm:text-base mt-1"
+                required
+              />
+            </div>
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full bg-blue-500 text-white p-2 rounded text-sm sm:text-base hover:bg-blue-600 disabled:bg-gray-400"
+            >
+              {loading ? 'Generating...' : 'Generate Report'}
+            </button>
+          </form>
         )}
       </div>
     </div>
