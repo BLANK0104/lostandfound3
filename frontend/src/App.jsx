@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import LostForm from './components/LostForm.jsx/index.js';
+import LostForm from './components/LostForm.jsx';
 import FoundForm from './components/FoundForm.jsx';
-import LostList from './components/LostList.jsx/index.js';
-import FoundList from './components/FoundList.jsx/index.js';
-import ReportForm from './components/ReportForm.jsx/index.js';
+import LostList from './components/LostList.jsx';
+import FoundList from './components/FoundList.jsx';
+import ReportForm from './components/ReportForm.jsx';
 import './App.css';
 
 function App() {
