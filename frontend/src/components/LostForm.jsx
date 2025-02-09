@@ -75,7 +75,7 @@ const LostForm = ({ setError }) => {
         <button
           type="submit"
           disabled={loading}
-          className="bg-blue-500 text-white p-2 rounded text-sm sm:text-base hover:bg-blue-600 disabled:bg-gray-400"
+          className="bg-green-500 text-black p-2 rounded text-sm sm:text-base hover:bg-green-600 disabled:bg-black-400"
         >
           {loading ? 'Submitting...' : 'Submit'}
         </button>

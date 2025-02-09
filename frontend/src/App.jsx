@@ -12,6 +12,11 @@ import './index.css';
 function App() {
   const [activeTab, setActiveTab] = useState('lostForm');
   const [error, setError] = useState(null);
+  const [user, setUser] = useState(null);
+
+  const handleLogin = (userData) => {
+    setUser(userData);
+  };
 
   const handleTabChange = (event) => {
     setActiveTab(event.target.value);
@@ -19,8 +24,7 @@ function App() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <Header />
-
+      <Header onLogin={handleLogin} isLoggedIn={!!user} userRole={user?.username} />
       <main className="flex-grow flex items-center justify-center pt-20 pb-10">
         <div className="w-full max-w-4xl mx-auto px-4">
           <div className="flex flex-col items-center space-y-6">
@@ -34,7 +38,7 @@ function App() {
                 <option value="foundForm">Report Found Item</option>
                 <option value="lostList">Lost Items</option>
                 <option value="foundList">Found Items</option>
-                <option value="report">Generate Report</option>
+                {user?.isAdmin && <option value="report">Generate Report</option>}
               </select>
             </div>
 

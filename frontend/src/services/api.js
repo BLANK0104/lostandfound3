@@ -33,6 +33,38 @@ export const fetchLostItems = async () => {
   return response.json();
 };
 
+export const registerUser = async (formData) => {
+  const response = await fetch(`${API_URL}/users/register`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(formData),
+  });
+
+  if (!response.ok) {
+    const data = await response.json();
+    throw new Error(data.error || 'Failed to create user');
+  }
+
+  return response.json();
+};
+
+export const loginUser = async (credentials) => {
+  const response = await fetch(`${API_URL}/auth/login`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(credentials),
+  });
+
+  if (!response.ok) {
+    throw new Error('Invalid credentials');
+  }
+
+  return response.json();
+};
+
+
 export const fetchFoundItems = async () => {
   const response = await fetch(`${API_URL}/found-items`);
   if (!response.ok) {
@@ -49,6 +81,10 @@ export const markItemAsFound = async (itemId) => {
     throw new Error(`HTTP error! status: ${response.status}`);
   }
   return response.json();
+};
+
+const headers = {
+  'Authorization': `Bearer ${localStorage.getItem('token')}`
 };
 
 export const generateReport = async (fromDate, toDate) => {

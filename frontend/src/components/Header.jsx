@@ -1,13 +1,49 @@
-import React from 'react';
+import React, { useState } from 'react';
+import LoginModal from './LoginModal';
+import AddUserModal from './AddUserModal';
 
-const Header = () => {
+const Header = ({ onLogin, isLoggedIn, userRole }) => {
+  const [showLoginModal, setShowLoginModal] = useState(false);
+  const [showAddUserModal, setShowAddUserModal] = useState(false);
+
   return (
-    <header className="bg-blue-600 text-white py-4 fixed top-0 z-50 w-auto">
-      <div className="px-4">
-        <h1 className="text-2xl sm:text-3xl font-bold text-left">
-          Lost and Found
+    <header className="bg-gray-100 py-4 mt-8">
+      <div className="container mx-auto px-4 flex flex-col items-center">
+        <h1 className="text-2xl sm:text-3xl font-bold mb-2">
+          Lost and Found System
         </h1>
+        <div className="flex gap-4">
+          {isLoggedIn ? (
+            <>
+              <span className="mr-4">Welcome, {userRole}</span>
+            </>
+          ) : (
+            <button
+              onClick={() => setShowLoginModal(true)}
+              className="px-4 py-2 bg-white text-blue-600 rounded hover:bg-blue-50 transition-colors"
+            >
+              Login
+            </button>
+          )}
+          <button
+            onClick={() => setShowAddUserModal(true)}
+            className="px-4 py-2 bg-green-600 text-black rounded hover:bg-green-700 transition-colors"
+          >
+            Add User
+          </button>
+        </div>
       </div>
+      {showLoginModal && (
+        <LoginModal
+          onClose={() => setShowLoginModal(false)}
+          onLogin={onLogin}
+        />
+      )}
+      {showAddUserModal && (
+        <AddUserModal
+          onClose={() => setShowAddUserModal(false)}
+        />
+      )}
     </header>
   );
 };

@@ -103,7 +103,7 @@ const FoundForm = ({ setError }) => {
       <button
         type="submit"
         disabled={loading}
-        className="w-full bg-indigo-600 text-white p-3 rounded font-medium hover:bg-indigo-700 disabled:bg-gray-400 transition-colors"
+        className="w-full bg-indigo-600 text-black p-3 rounded font-medium hover:bg-indigo-700 disabled:bg-gray-400 transition-colors"
       >
         {loading ? 'Submitting...' : 'Submit'}
       </button>

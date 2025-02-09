@@ -1,2 +1,5 @@
 /uploads/*
 !/uploads/.gitkeep
+
+/node_modules/*
+!/node_modules/.gitkeep
