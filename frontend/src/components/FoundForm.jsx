@@ -43,48 +43,67 @@ const FoundForm = ({ setError }) => {
   };
 
   return (
-    <form onSubmit={handleFoundSubmit} className="space-y-4 max-w-lg mx-auto px-4 sm:px-0">
-      <input
-        type="text"
-        placeholder="Item Name"
-        value={foundForm.item_name}
-        onChange={(e) => setFoundForm({...foundForm, item_name: e.target.value})}
-        className="w-full p-2 border rounded text-sm sm:text-base"
-        required
-      />
-      <textarea
-        placeholder="Description"
-        value={foundForm.description}
-        onChange={(e) => setFoundForm({...foundForm, description: e.target.value})}
-        className="w-full p-2 border rounded text-sm sm:text-base"
-        required
-        rows="3"
-      />
-      <input
-        type="datetime-local"
-        value={foundForm.found_date}
-        onChange={(e) => setFoundForm({...foundForm, found_date: e.target.value})}
-        className="w-full p-2 border rounded text-sm sm:text-base"
-        required
-      />
-      <input
-        type="text"
-        placeholder="Location"
-        value={foundForm.location}
-        onChange={(e) => setFoundForm({...foundForm, location: e.target.value})}
-        className="w-full p-2 border rounded text-sm sm:text-base"
-        required
-      />
-      <input
-        type="file"
-        onChange={(e) => setFoundForm({...foundForm, image: e.target.files[0]})}
-        className="w-full p-2 border rounded text-sm sm:text-base"
-        accept="image/*"
-      />
+    <form onSubmit={handleFoundSubmit} className="space-y-6 max-w-lg mx-auto px-4 sm:px-0 bg-gray-100 p-6 rounded-lg shadow-md">
+      <div className="grid grid-cols-1 gap-6">
+        <div className="flex flex-col">
+          <label className="text-gray-700 font-medium mb-2">Item Name</label>
+          <input
+            type="text"
+            value={foundForm.item_name}
+            onChange={(e) => setFoundForm({...foundForm, item_name: e.target.value})}
+            className="p-2 border border-gray-300 rounded bg-white text-gray-800 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+            required
+          />
+        </div>
+
+        <div className="flex flex-col">
+          <label className="text-gray-700 font-medium mb-2">Description</label>
+          <textarea
+            value={foundForm.description}
+            onChange={(e) => setFoundForm({...foundForm, description: e.target.value})}
+            className="p-2 border border-gray-300 rounded bg-white text-gray-800 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+            required
+            rows="3"
+          />
+        </div>
+
+        <div className="flex flex-col">
+          <label className="text-gray-700 font-medium mb-2">Date Found</label>
+          <input
+            type="datetime-local"
+            value={foundForm.found_date}
+            onChange={(e) => setFoundForm({...foundForm, found_date: e.target.value})}
+            className="p-2 border border-gray-300 rounded bg-white text-gray-800 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+            required
+          />
+        </div>
+
+        <div className="flex flex-col">
+          <label className="text-gray-700 font-medium mb-2">Location</label>
+          <input
+            type="text"
+            value={foundForm.location}
+            onChange={(e) => setFoundForm({...foundForm, location: e.target.value})}
+            className="p-2 border border-gray-300 rounded bg-white text-gray-800 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+            required
+          />
+        </div>
+
+        <div className="flex flex-col">
+          <label className="text-gray-700 font-medium mb-2">Image</label>
+          <input
+            type="file"
+            onChange={(e) => setFoundForm({...foundForm, image: e.target.files[0]})}
+            className="p-2 border border-gray-300 rounded bg-white text-gray-800 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+            accept="image/*"
+          />
+        </div>
+      </div>
+
       <button
         type="submit"
         disabled={loading}
-        className="w-full bg-blue-500 text-white p-2 rounded text-sm sm:text-base hover:bg-blue-600 disabled:bg-gray-400"
+        className="w-full bg-indigo-600 text-white p-3 rounded font-medium hover:bg-indigo-700 disabled:bg-gray-400 transition-colors"
       >
         {loading ? 'Submitting...' : 'Submit'}
       </button>
