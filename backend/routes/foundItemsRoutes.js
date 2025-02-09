@@ -1,18 +1,9 @@
 const express = require('express');
-const { Pool } = require('pg');
+const router = express.Router();
 const multer = require('multer');
 const path = require('path');
-
-const router = express.Router();
-
-// Database configuration
-const pool = new Pool({
-    user: process.env.DB_USER || 'postgres',
-    host: process.env.DB_HOST || 'localhost',
-    database: process.env.DB_NAME || 'lostandfound',
-    password: process.env.DB_PASSWORD || 'your_password',
-    port: process.env.DB_PORT || 5432,
-});
+const { createFoundItem } = require('../controllers/foundItemsController');
+const pool = require('../config/db');
 
 // Multer configuration for image uploads
 const storage = multer.diskStorage({
@@ -35,11 +26,12 @@ const upload = multer({
         if (mimeType && extname) {
             return cb(null, true);
         }
-        cb(new Error('Only image files are allowed!'));
+        cb(null, false);
+        return cb(new Error('Only image files are allowed!'));
     }
 });
 
-// 📌 GET All Found Items
+// Get all found items
 router.get('/', async (req, res) => {
     try {
         const result = await pool.query('SELECT * FROM found_items ORDER BY created_at DESC');
@@ -50,27 +42,27 @@ router.get('/', async (req, res) => {
     }
 });
 
-// 📌 POST a New Found Item
-router.post('/', upload.single('image'), async (req, res) => {
-    try {
-        const { item_name, description, found_date, location } = req.body;
-        const image_url = req.file ? `/uploads/${req.file.filename}` : null;
+// Create new found item - using the controller
+router.post('/', upload.single('image'), createFoundItem);
 
-        const query = `
-            INSERT INTO found_items (item_name, description, found_date, location, image_url)
-            VALUES ($1, $2, $3, $4, $5)
-            RETURNING *
-        `;
-        const values = [item_name, description, found_date, location, image_url];
-        const result = await pool.query(query, values);
+// Get a specific found item
+router.get('/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const result = await pool.query('SELECT * FROM found_items WHERE id = $1', [id]);
+        
+        if (result.rows.length === 0) {
+            return res.status(404).json({ error: 'Item not found' });
+        }
+        
         res.json(result.rows[0]);
     } catch (err) {
-        console.error('Error creating found item:', err.message);
+        console.error('Error retrieving found item:', err.message);
         res.status(500).json({ error: err.message });
     }
 });
 
-// 📌 Mark an Item as Claimed
+// Mark an item as claimed
 router.put('/:id/mark-claimed', async (req, res) => {
     try {
         const { id } = req.params;
@@ -78,12 +70,54 @@ router.put('/:id/mark-claimed', async (req, res) => {
             'UPDATE found_items SET is_claimed = true WHERE id = $1 RETURNING *',
             [id]
         );
+        
         if (result.rows.length === 0) {
             return res.status(404).json({ error: 'Item not found' });
         }
+        
         res.json(result.rows[0]);
     } catch (err) {
         console.error('Error marking item as claimed:', err.message);
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// Mark an item as returned
+router.put('/:id/mark-returned', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const result = await pool.query(
+            'UPDATE found_items SET is_returned = true WHERE id = $1 RETURNING *',
+            [id]
+        );
+        
+        if (result.rows.length === 0) {
+            return res.status(404).json({ error: 'Item not found' });
+        }
+        
+        res.json(result.rows[0]);
+    } catch (err) {
+        console.error('Error marking item as returned:', err.message);
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// Delete a found item
+router.delete('/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const result = await pool.query(
+            'DELETE FROM found_items WHERE id = $1 RETURNING *',
+            [id]
+        );
+        
+        if (result.rows.length === 0) {
+            return res.status(404).json({ error: 'Item not found' });
+        }
+        
+        res.json({ message: 'Item deleted successfully' });
+    } catch (err) {
+        console.error('Error deleting found item:', err.message);
         res.status(500).json({ error: err.message });
     }
 });

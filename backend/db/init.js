@@ -2,7 +2,6 @@ const pool = require('../db');
 
 const initializeDatabase = async () => {
     try {
-        // Create users table
         await pool.query(`
             CREATE TABLE IF NOT EXISTS users (
                 id SERIAL PRIMARY KEY,
@@ -15,10 +14,14 @@ const initializeDatabase = async () => {
             CREATE TABLE IF NOT EXISTS lost_items (
                 id SERIAL PRIMARY KEY,
                 user_id INTEGER REFERENCES users(id),
-                title VARCHAR(100) NOT NULL,
-                description TEXT,
+                item_name VARCHAR(100) NOT NULL,
+                person_name VARCHAR(100) NOT NULL,
+                lost_date TIMESTAMP NOT NULL,
                 location VARCHAR(200),
-                date_lost DATE,
+                contact_number VARCHAR(20),
+                email VARCHAR(100),
+                description TEXT,
+                amount NUMERIC,
                 status VARCHAR(20) DEFAULT 'lost',
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             );
@@ -26,10 +29,12 @@ const initializeDatabase = async () => {
             CREATE TABLE IF NOT EXISTS found_items (
                 id SERIAL PRIMARY KEY,
                 user_id INTEGER REFERENCES users(id),
-                title VARCHAR(100) NOT NULL,
-                description TEXT,
+                item_name VARCHAR(100) NOT NULL,
+                found_date TIMESTAMP NOT NULL,
                 location VARCHAR(200),
-                date_found DATE,
+                description TEXT,
+                amount NUMERIC,
+                image_url VARCHAR(255),
                 status VARCHAR(20) DEFAULT 'found',
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             );
