@@ -34,6 +34,11 @@ const FoundList = ({ setError }) => {
     }
   };
 
+  const splitText = (text, limit) => {
+    const regex = new RegExp(`.{1,${limit}}`, 'g');
+    return text.match(regex).join('\n');
+  };
+
   const filteredFoundItems = foundItems.filter(item => 
     !item.is_claimed && 
     (item.item_name.toLowerCase().includes(foundItemsSearch.toLowerCase()) ||
@@ -59,10 +64,14 @@ const FoundList = ({ setError }) => {
         ) : (
           filteredFoundItems.map(item => (
             <div key={item.id} className="border p-4 sm:p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow">
-              <h3 className="font-bold text-lg sm:text-xl mb-2">{item.item_name}</h3>
-              <p className="text-sm sm:text-base mb-1">{item.description}</p>
+              <h3 className="font-bold text-lg sm:text-xl mb-2">{splitText(item.item_name, 15)}</h3>
+              {item.item_name.toLowerCase() === 'cash' ? (
+                <p className="text-sm sm:text-base mb-1">Amount: {splitText(item.amount.toString(), 15)}</p>
+              ) : (
+                <p className="text-sm sm:text-base mb-1">{splitText(item.description, 15)}</p>
+              )}
               <p className="text-sm sm:text-base mb-1">Date: {new Date(item.found_date).toLocaleDateString()}</p>
-              <p className="text-sm sm:text-base mb-3">Location: {item.location}</p>
+              <p className="text-sm sm:text-base mb-3">Location: {splitText(item.location, 15)}</p>
               {item.image_url && (
                 <img 
                   src={`http://192.168.107.140:5000${item.image_url}`} 
@@ -72,7 +81,7 @@ const FoundList = ({ setError }) => {
               )}
               <button
                 onClick={() => handleMarkAsClaimed(item.id)}
-                className="w-full bg-green-500 text-white p-2 rounded text-sm sm:text-base hover:bg-green-600 transition-colors"
+                className="w-full bg-green-500 text-black p-2 rounded text-sm sm:text-base hover:bg-green-600 transition-colors"
               >
                 Mark as Claimed
               </button>

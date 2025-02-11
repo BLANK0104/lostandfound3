@@ -34,6 +34,11 @@ const LostList = ({ setError }) => {
     }
   };
 
+  const splitText = (text, length) => {
+    const regex = new RegExp(`.{1,${length}}`, 'g');
+    return text.match(regex);
+  };
+
   const filteredLostItems = lostItems.filter(item =>
     item.item_name.toLowerCase().includes(lostItemsSearch.toLowerCase()) ||
     item.location.toLowerCase().includes(lostItemsSearch.toLowerCase())
@@ -58,16 +63,52 @@ const LostList = ({ setError }) => {
         ) : (
           filteredLostItems.map(item => (
             <div key={item.id} className="border p-4 sm:p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow">
-              <h3 className="font-bold text-lg sm:text-xl mb-2">{item.item_name}</h3>
-              <p className="text-sm sm:text-base mb-1">Item description: {item.description}</p>
-              <p className="text-sm sm:text-base mb-1">Lost by: {item.person_name}</p>
-              <p className="text-sm sm:text-base mb-1">Date: {new Date(item.lost_date).toLocaleDateString()}</p>
-              <p className="text-sm sm:text-base mb-1">Location: {item.location}</p>
-              <p className="text-sm sm:text-base mb-1">Contact: {item.contact_number}</p>
-              <p className="text-sm sm:text-base mb-3">Email: {item.email}</p>
+              <h3 className="font-bold text-lg sm:text-xl mb-2 wrap-text">
+                {splitText(item.item_name, 15).map((line, index) => (
+                  <span key={index}>{line}<br /></span>
+                ))}
+              </h3>
+              {item.item_name.toLowerCase() === 'cash' ? (
+                <p className="text-sm sm:text-base mb-1 wrap-text">
+                  Amount: {splitText(item.amount.toString(), 15).map((line, index) => (
+                    <span key={index}>{line}<br /></span>
+                  ))}
+                </p>
+              ) : (
+                <p className="text-sm sm:text-base mb-1 wrap-text">
+                  Item description: {splitText(item.description, 15).map((line, index) => (
+                    <span key={index}>{line}<br /></span>
+                  ))}
+                </p>
+              )}
+              <p className="text-sm sm:text-base mb-1 wrap-text">
+                Lost by: {splitText(item.person_name, 15).map((line, index) => (
+                  <span key={index}>{line}<br /></span>
+                ))}
+              </p>
+              <p className="text-sm sm:text-base mb-1 wrap-text">
+                Date: {splitText(new Date(item.lost_date).toLocaleDateString(), 15).map((line, index) => (
+                  <span key={index}>{line}<br /></span>
+                ))}
+              </p>
+              <p className="text-sm sm:text-base mb-1 wrap-text">
+                Location: {splitText(item.location, 15).map((line, index) => (
+                  <span key={index}>{line}<br /></span>
+                ))}
+              </p>
+              <p className="text-sm sm:text-base mb-1 wrap-text">
+                Contact: {splitText(item.contact_number, 15).map((line, index) => (
+                  <span key={index}>{line}<br /></span>
+                ))}
+              </p>
+              <p className="text-sm sm:text-base mb-3 wrap-text">
+                Email: {splitText(item.email, 15).map((line, index) => (
+                  <span key={index}>{line}<br /></span>
+                ))}
+              </p>
               <button
                 onClick={() => handleMarkAsFound(item.id)}
-                className="w-full bg-green-500 text-white p-2 rounded text-sm sm:text-base hover:bg-green-600 transition-colors"
+                className="w-full bg-green-500 text-black p-2 rounded text-sm sm:text-base hover:bg-green-600 transition-colors"
               >
                 Mark as Found
               </button>
