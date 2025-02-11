@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { fetchFoundItems, markFoundItemAsClaimed } from '../services/api';
+import ClaimForm from './ClaimForm';
 
 const FoundList = ({ setError }) => {
   const [loading, setLoading] = useState(false);
   const [foundItems, setFoundItems] = useState([]);
   const [foundItemsSearch, setFoundItemsSearch] = useState('');
+  const [selectedItem, setSelectedItem] = useState(null);
 
   useEffect(() => {
     loadFoundItems();
@@ -22,11 +24,12 @@ const FoundList = ({ setError }) => {
     }
   };
 
-  const handleMarkAsClaimed = async (itemId) => {
+  const handleClaimSubmit = async (claimData) => {
     try {
       setLoading(true);
-      await markFoundItemAsClaimed(itemId);
-      setFoundItems(foundItems.filter(item => item.id !== itemId));
+      await markFoundItemAsClaimed(claimData);
+      setFoundItems(foundItems.filter(item => item.id !== claimData.item_id));
+      setSelectedItem(null);
     } catch (err) {
       setError(err.message);
     } finally {
@@ -56,6 +59,13 @@ const FoundList = ({ setError }) => {
           className="w-full p-2 border rounded text-sm sm:text-base"
         />
       </div>
+      {selectedItem && (
+        <ClaimForm
+          item={selectedItem}
+          onSubmit={handleClaimSubmit}
+          onCancel={() => setSelectedItem(null)}
+        />
+      )}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
         {loading ? (
           <p className="text-center col-span-full">Loading...</p>
@@ -84,7 +94,7 @@ const FoundList = ({ setError }) => {
                   />
                 )}
                 <button
-                  onClick={() => handleMarkAsClaimed(item.id)}
+                  onClick={() => setSelectedItem(item)}
                   className="w-full bg-green-500 text-black p-2 rounded text-sm sm:text-base hover:bg-green-600 transition-colors"
                 >
                   Mark as Claimed

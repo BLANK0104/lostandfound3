@@ -6,6 +6,7 @@ import FoundList from './components/FoundList.jsx';
 import ReportForm from './components/ReportForm.jsx';
 import Header from './components/Header.jsx';
 import Footer from './components/Footer.jsx';
+import ReturnedItems from './components/ReturnedItems.jsx';
 import './App.css';
 import './index.css';
 
@@ -34,10 +35,11 @@ function App() {
                 onChange={handleTabChange}
                 className="w-full px-6 py-3 rounded-lg text-base sm:text-lg bg-gray-200 border border-gray-400"
               >
-                <option value="lostForm">Report Lost Item</option>
-                <option value="foundForm">Report Found Item</option>
-                <option value="lostList">Lost Items</option>
+                <option value="lostForm">Register Complaint</option>
+                <option value="foundForm">Register Found Item</option>
+                <option value="lostList">List of COmmplaints</option>
                 <option value="foundList">Found Items</option>
+                <option value="returnedItems">Returned Items</option>
                 {user?.isAdmin && <option value="report">Generate Report</option>}
               </select>
             </div>
@@ -59,6 +61,7 @@ function App() {
               {activeTab === 'foundForm' && <FoundForm setError={setError} />}
               {activeTab === 'lostList' && <LostList setError={setError} />}
               {activeTab === 'foundList' && <FoundList setError={setError} />}
+              {activeTab === 'returnedItems' && <ReturnedItems setError={setError} />}
               {activeTab === 'report' && <ReportForm setError={setError} />}
             </div>
           </div>

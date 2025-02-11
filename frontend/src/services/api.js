@@ -64,7 +64,6 @@ export const loginUser = async (credentials) => {
   return response.json();
 };
 
-
 export const fetchFoundItems = async () => {
   const response = await fetch(`${API_URL}/found-items`);
   if (!response.ok) {
@@ -110,12 +109,38 @@ export const generateReport = async (fromDate, toDate) => {
   window.URL.revokeObjectURL(url);
 };
 
-export const markFoundItemAsClaimed = async (itemId) => {
-  const response = await fetch(`${API_URL}/found-items/${itemId}/mark-claimed`, {
-    method: 'PUT'
+export const markFoundItemAsClaimed = async (claimData) => {
+  console.log('Sending claim data:', {
+    ...claimData,
+    signature: claimData.signature ? 'signature_present' : 'signature_missing'
   });
+
+  const response = await fetch(`${API_URL}/claims/${claimData.item_id}`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      claimer_name: claimData.claimer_name,
+      claim_date: claimData.claim_date,
+      contact_number: claimData.contact_number,
+      signature: claimData.signature
+    })
+  });
+  
   if (!response.ok) {
-    throw new Error(`HTTP error! status: ${response.status}`);
+    const errorData = await response.json();
+    throw new Error(errorData.error || 'Failed to mark item as claimed');
+  }
+  
+  return response.json();
+};
+
+export const getAllClaims = async () => {
+  const response = await fetch(`${API_URL}/claims`);
+  if (!response.ok) {
+    throw new Error('Failed to fetch returned items');
   }
   return response.json();
 };
+

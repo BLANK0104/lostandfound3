@@ -38,6 +38,16 @@ const initializeDatabase = async () => {
                 status VARCHAR(20) DEFAULT 'found',
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             );
+
+            CREATE TABLE IF NOT EXISTS claim_records (
+                id SERIAL PRIMARY KEY,
+                item_id INTEGER REFERENCES found_items(id),
+                claimer_name VARCHAR(100) NOT NULL,
+                claim_date TIMESTAMP NOT NULL,
+                contact_number VARCHAR(20) NOT NULL,
+                signature_url TEXT NOT NULL,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            );
         `);
         
         console.log('Database tables initialized successfully');

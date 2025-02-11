@@ -6,7 +6,9 @@ const foundItemsRoutes = require('./routes/foundItemsRoutes');
 const reportRoutes = require('./routes/reportRoutes');
 const authRoutes = require('./routes/authRoutes');
 const userRoutes = require('./routes/userRoutes');
+const claimRoutes = require('./routes/claimRoutes');
 const pool = require('./db');
+const path = require('path');
 const { initializeDatabase } = require('./db/init');
 
 const app = express();
@@ -24,6 +26,8 @@ const startServer = async () => {
         app.use(corsConfig);
         app.use(express.json());
         app.use('/uploads', express.static('uploads'));
+        app.use('/claims', claimRoutes);
+        app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
         // Routes
         app.use('/auth', authRoutes);
