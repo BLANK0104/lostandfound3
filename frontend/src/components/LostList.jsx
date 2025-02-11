@@ -62,36 +62,14 @@ const LostList = ({ setError }) => {
           <p className="text-center col-span-full">No lost items found.</p>
         ) : (
           filteredLostItems.map(item => (
-            <div key={item.id} className="border p-4 rounded-lg">
-              <h3 className="font-bold">{item.item_name}</h3>
-              {item.sub_category && (
-                <p className="text-sm text-gray-600">Type: {item.sub_category}</p>
-              )}
-              <p className="text-sm sm:text-base mb-1 wrap-text">
-                Lost by: {splitText(item.person_name, 15).map((line, index) => (
-                  <span key={index}>{line}<br /></span>
-                ))}
-              </p>
-              <p className="text-sm sm:text-base mb-1 wrap-text">
-                Date: {splitText(new Date(item.lost_date).toLocaleDateString(), 15).map((line, index) => (
-                  <span key={index}>{line}<br /></span>
-                ))}
-              </p>
-              <p className="text-sm sm:text-base mb-1 wrap-text">
-                Location: {splitText(item.location, 15).map((line, index) => (
-                  <span key={index}>{line}<br /></span>
-                ))}
-              </p>
-              <p className="text-sm sm:text-base mb-1 wrap-text">
-                Contact: {splitText(item.contact_number, 15).map((line, index) => (
-                  <span key={index}>{line}<br /></span>
-                ))}
-              </p>
-              <p className="text-sm sm:text-base mb-3 wrap-text">
-                Email: {splitText(item.email, 15).map((line, index) => (
-                  <span key={index}>{line}<br /></span>
-                ))}
-              </p>
+            <div key={item.id} className="border p-4 sm:p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow">
+              <h3 className="font-bold text-lg sm:text-xl mb-2">{item.item_name}</h3>
+              <p className="text-sm sm:text-base mb-1">Item description: {item.description}</p>
+              <p className="text-sm sm:text-base mb-1">Lost by: {item.person_name}</p>
+              <p className="text-sm sm:text-base mb-1">Date: {new Date(item.lost_date).toLocaleDateString()}</p>
+              <p className="text-sm sm:text-base mb-1">Location: {item.location}</p>
+              <p className="text-sm sm:text-base mb-1">Contact: {item.contact_number}</p>
+              <p className="text-sm sm:text-base mb-3">Email: {item.email}</p>
               <button
                 onClick={() => handleMarkAsFound(item.id)}
                 className="w-full bg-green-500 text-black p-2 rounded text-sm sm:text-base hover:bg-green-600 transition-colors"
