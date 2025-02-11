@@ -55,31 +55,17 @@ const LostList = ({ setError }) => {
           className="w-full p-2 border rounded text-sm sm:text-base"
         />
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+      <div className="grid grid-cols-1 gap-4">
         {loading ? (
           <p className="text-center col-span-full">Loading...</p>
         ) : filteredLostItems.length === 0 ? (
           <p className="text-center col-span-full">No lost items found.</p>
         ) : (
           filteredLostItems.map(item => (
-            <div key={item.id} className="border p-4 sm:p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow">
-              <h3 className="font-bold text-lg sm:text-xl mb-2 wrap-text">
-                {splitText(item.item_name, 15).map((line, index) => (
-                  <span key={index}>{line}<br /></span>
-                ))}
-              </h3>
-              {item.item_name.toLowerCase() === 'cash' ? (
-                <p className="text-sm sm:text-base mb-1 wrap-text">
-                  Amount: {splitText(item.amount.toString(), 15).map((line, index) => (
-                    <span key={index}>{line}<br /></span>
-                  ))}
-                </p>
-              ) : (
-                <p className="text-sm sm:text-base mb-1 wrap-text">
-                  Item description: {splitText(item.description, 15).map((line, index) => (
-                    <span key={index}>{line}<br /></span>
-                  ))}
-                </p>
+            <div key={item.id} className="border p-4 rounded-lg">
+              <h3 className="font-bold">{item.item_name}</h3>
+              {item.sub_category && (
+                <p className="text-sm text-gray-600">Type: {item.sub_category}</p>
               )}
               <p className="text-sm sm:text-base mb-1 wrap-text">
                 Lost by: {splitText(item.person_name, 15).map((line, index) => (

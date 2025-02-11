@@ -2,14 +2,8 @@ const pool = require('../config/db');
 
 exports.createFoundItem = async (req, res) => {
     try {
-        const { item_name, description, found_date, location, amount } = req.body;
+        const { item_name, description, found_date, location, amount, sub_category } = req.body;
         
-        // Force debug logging at the start
-        console.log('=== DEBUG START ===');
-        console.log('Raw amount from request:', amount);
-        console.log('Type of amount:', typeof amount);
-        
-        // Input validation
         if (!item_name || !found_date || !location) {
             return res.status(400).json({ 
                 error: 'Item name, found date, and location are required' 
@@ -43,12 +37,12 @@ exports.createFoundItem = async (req, res) => {
 
         const image_url = req.file ? `/uploads/${req.file.filename}` : null;
 
-        // Modified query to ensure numeric casting
+        // Modified query to include sub_category
         const query = `
             INSERT INTO found_items 
-            (item_name, description, found_date, location, amount, image_url)
+            (item_name, description, found_date, location, amount, image_url, sub_category)
             VALUES 
-            ($1, $2, $3, $4, $5, $6)
+            ($1, $2, $3, $4, $5, $6, $7)
             RETURNING *;
         `;
 
@@ -58,7 +52,8 @@ exports.createFoundItem = async (req, res) => {
             found_date,
             location,
             parsedAmount, // Should be a number or null
-            image_url
+            image_url,
+            sub_category || null
         ];
 
         // Log final values before database insertion
@@ -68,7 +63,8 @@ exports.createFoundItem = async (req, res) => {
             found_date,
             location,
             parsedAmount,
-            image_url
+            image_url,
+            sub_category: sub_category || null
         });
 
         const result = await pool.query(query, values);

@@ -2,16 +2,34 @@ import React, { useState } from 'react';
 import { submitFoundItem } from '../services/api';
 
 const FoundForm = ({ setError }) => {
-  const [loading, setLoading] = useState(false);
   const [foundForm, setFoundForm] = useState({
     item_name: '',
     description: '',
     amount: '',
     found_date: '',
     location: '',
-    image: null
+    image: null,
+    sub_category: '' // Add this line
   });
+  const [loading, setLoading] = useState(false);
 
+  // Add this function to get sub-category options
+  const getSubCategories = (itemName) => {
+    switch(itemName.toLowerCase()) {
+      case 'wallets/purses':
+        return ['Male', 'Female'];
+      case 'jewellery':
+        return ['Gold', 'Silver'];
+      case 'watch':
+        return ['Male', 'Female'];
+      case 'mobile':
+        return ['Android', 'iPhone'];
+      default:
+        return [];
+    }
+  };
+
+  // Modify handleFoundSubmit to include sub_category
   const handleFoundSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -22,6 +40,7 @@ const FoundForm = ({ setError }) => {
       formData.append('item_name', foundForm.item_name);
       formData.append('found_date', formattedDate);
       formData.append('location', foundForm.location);
+      formData.append('sub_category', foundForm.sub_category); // Add this line
       if (foundForm.image) {
         formData.append('image', foundForm.image);
       }
@@ -41,7 +60,8 @@ const FoundForm = ({ setError }) => {
         amount: '',
         found_date: '',
         location: '',
-        image: null
+        image: null,
+        sub_category: '' // Reset sub_category
       });
       alert('Found item reported successfully!');
     } catch (err) {
@@ -50,6 +70,8 @@ const FoundForm = ({ setError }) => {
       setLoading(false);
     }
   };
+
+  const needsSubCategory = ['wallets/purses', 'jewellery', 'watch', 'mobile'].includes(foundForm.item_name);
 
   return (
     <form onSubmit={handleFoundSubmit} className="space-y-6 max-w-lg mx-auto px-4 sm:px-0 bg-gray-100 p-6 rounded-lg shadow-md">
@@ -72,6 +94,25 @@ const FoundForm = ({ setError }) => {
             <option value="other">Other</option>
           </select>
         </div>
+
+        {needsSubCategory && (
+          <div className="flex flex-col">
+            <label className="text-gray-700 font-medium mb-2">Sub Category</label>
+            <select
+              value={foundForm.sub_category}
+              onChange={(e) => setFoundForm({...foundForm, sub_category: e.target.value})}
+              className="p-2 border border-gray-300 rounded bg-white text-gray-800 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+              required
+            >
+              <option value="">Select sub-category</option>
+              {getSubCategories(foundForm.item_name).map((option) => (
+                <option key={option} value={option.toLowerCase()}>
+                  {option}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
 
         {foundForm.item_name === 'cash' ? (
           <div className="flex flex-col">

@@ -11,8 +11,27 @@ const LostForm = ({ setError }) => {
     contact_number: '',
     email: '',
     description: '',
-    amount: ''
+    amount: '',
+    sub_category: '' // Add this line
   });
+
+  // Add this function to get sub-category options
+  const getSubCategories = (itemName) => {
+    switch(itemName.toLowerCase()) {
+      case 'wallets/purses':
+        return ['Male', 'Female'];
+      case 'jewellery':
+        return ['Gold', 'Silver'];
+      case 'watch':
+        return ['Male', 'Female'];
+      case 'mobile':
+        return ['Android', 'iPhone'];
+      default:
+        return [];
+    }
+  };
+
+  const needsSubCategory = ['wallets/purses', 'jewellery', 'watch', 'mobile'].includes(lostForm.item_name);
 
   const handleLostSubmit = async (e) => {
     e.preventDefault();
@@ -31,7 +50,8 @@ const LostForm = ({ setError }) => {
         contact_number: '',
         email: '',
         description: '',
-        amount: ''
+        amount: '',
+        sub_category: '' // Add this line
       });
       alert('Lost item reported successfully!');
     } catch (err) {
@@ -61,6 +81,27 @@ const LostForm = ({ setError }) => {
           <option value="other">Other</option>
         </select>
       </div>
+
+      {/* Add this after item name select */}
+      {needsSubCategory && (
+        <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-4">
+          <label className="w-full sm:w-1/3 text-left sm:text-right text-sm sm:text-base">Sub Category:</label>
+          <select
+            value={lostForm.sub_category}
+            onChange={(e) => setLostForm({ ...lostForm, sub_category: e.target.value })}
+            className="w-full sm:w-2/3 p-2 border border-black rounded text-sm sm:text-base"
+            required
+          >
+            <option value="">Select sub-category</option>
+            {getSubCategories(lostForm.item_name).map((option) => (
+              <option key={option} value={option.toLowerCase()}>
+                {option}
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
+
       {lostForm.item_name === 'cash' ? (
         <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-4">
           <label className="w-full sm:w-1/3 text-left sm:text-right text-sm sm:text-base">Amount:</label>

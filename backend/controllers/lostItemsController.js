@@ -2,17 +2,42 @@ const pool = require('../config/db');
 
 exports.createLostItem = async (req, res) => {
     try {
-        const { item_name, person_name, lost_date, location, contact_number, email, description, amount } = req.body;
+        const { 
+            item_name, 
+            description, 
+            lost_date, 
+            location, 
+            amount, 
+            person_name, 
+            contact_number, 
+            email,
+            sub_category  // Add this line
+        } = req.body;
+
         const query = `
-            INSERT INTO lost_items (item_name, person_name, lost_date, location, contact_number, email, description, amount)
-            VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-            RETURNING *
+            INSERT INTO lost_items 
+            (item_name, description, lost_date, location, amount, person_name, contact_number, email, sub_category)
+            VALUES 
+            ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+            RETURNING *;
         `;
-        const values = [item_name, person_name, lost_date, location, contact_number, email, description, amount];
+
+        const values = [
+            item_name,
+            description || null,
+            lost_date,
+            location,
+            amount || null,
+            person_name,
+            contact_number,
+            email,
+            sub_category || null  // Add this line
+        ];
+
         const result = await pool.query(query, values);
         res.json(result.rows[0]);
     } catch (err) {
-        console.error('Error creating lost item:', err.message);
+        console.error('Error creating lost item:', err);
         res.status(500).json({ error: err.message });
     }
 };

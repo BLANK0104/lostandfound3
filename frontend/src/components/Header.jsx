@@ -16,6 +16,12 @@ const Header = ({ onLogin, isLoggedIn, userRole }) => {
           {isLoggedIn ? (
             <>
               <span className="mr-4">Welcome, {userRole}</span>
+              <button
+                onClick={() => setShowAddUserModal(true)}
+                className="px-4 py-2 bg-green-600 text-black rounded hover:bg-green-700 transition-colors"
+              >
+                Add User
+              </button>
             </>
           ) : (
             <button
@@ -25,12 +31,6 @@ const Header = ({ onLogin, isLoggedIn, userRole }) => {
               Login
             </button>
           )}
-          <button
-            onClick={() => setShowAddUserModal(true)}
-            className="px-4 py-2 bg-green-600 text-black rounded hover:bg-green-700 transition-colors"
-          >
-            Add User
-          </button>
         </div>
       </div>
       {showLoginModal && (
